@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 
 class GameActivity(context: Context?) : View(context) {
@@ -23,6 +24,7 @@ class GameActivity(context: Context?) : View(context) {
     private var coordinateY = 0f
     private var coordinateX = 0f
     private var tiles = Array(tilesCount) {BooleanArray(tilesCount) {false} }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         coordinateX = (event?.x ?: 0) as Float
@@ -30,6 +32,7 @@ class GameActivity(context: Context?) : View(context) {
         changeTiles(tilesSize(coordinateY, coordinateX))
         return false
     }
+
     private fun colorTiles(canvas: Canvas?, p: Paint) {
         canvas?.apply {
             for (i in tiles.indices) {
@@ -86,11 +89,30 @@ class GameActivity(context: Context?) : View(context) {
         tiles[tile.first][tile.second] = !tiles[tile.first][tile.second]
         invalidate()
     }
+
     override fun onDraw(canvas: Canvas?) {
         paintTiles.color = Color.BLACK
         canvas?.apply {
             drawColor(Color.CYAN)
         }
         colorTiles(canvas, paintTiles)
+
+        if (checkVictory(this)) {
+            val toast = Toast.makeText(context, "toasted notice win", Toast.LENGTH_LONG)
+            toast.show() }
+        }
+
+    companion object {
+        private fun checkVictory(gameActivity: GameActivity) : Boolean{
+            val flag1 = gameActivity.tiles[0][0]
+            for (i in gameActivity.tiles.indices) {
+                for (j in gameActivity.tiles[i].indices) {
+                    if (gameActivity.tiles[i][j] != flag1) {
+                        return false
+                    }
+                }
+            }
+            return true
         }
     }
+}
